@@ -19,12 +19,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from api.foundation.exceptions import (
+from foundation.api.exceptions import (
     ExpiredOtpException,
     InvalidOtpException,
     ProtectedErrorException,
 )
-from api.foundation.serializers import (
+from foundation.api.serializers import (
     CurrencyMasterSerializer,
     CustomSocialLoginSerializer,
     EmailSendSerializer,
@@ -34,13 +34,13 @@ from api.foundation.serializers import (
     OtpVerifySerializer,
     PasswordResetSerializer,
     RegistrationSerializer,
-    UserSerializer,
     UserTypeSerializer,
     WhatsAPPSerializer,
     get_tokens_for_user,
     get_user_information,
 )
 from foundation.models import CurrencyMaster, User, UserAuthenticationOption, UserType
+from .app_settings import UserSerializer
 
 
 class RegistrationAPIView(generics.GenericAPIView):
@@ -206,7 +206,6 @@ class GoogleLogin(CustomSocialLoginView):
 
 @csrf_exempt
 def google_token(request):
-
     if "code" not in request.body.decode():
         from rest_framework_simplejwt.settings import api_settings as jwt_settings
         from rest_framework_simplejwt.views import TokenRefreshView
