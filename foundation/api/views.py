@@ -34,13 +34,13 @@ from foundation.api.serializers import (
     OtpVerifySerializer,
     PasswordResetSerializer,
     RegistrationSerializer,
-    UserSerializer,
     UserTypeSerializer,
     WhatsAPPSerializer,
     get_tokens_for_user,
     get_user_information,
 )
 from foundation.models import CurrencyMaster, User, UserAuthenticationOption, UserType
+from .app_settings import UserSerializer
 
 
 class RegistrationAPIView(generics.GenericAPIView):
