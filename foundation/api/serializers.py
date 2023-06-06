@@ -11,13 +11,12 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core import exceptions
 from django.template.loader import render_to_string
-from django.urls import reverse
 from django.utils.translation import gettext as _
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from api.foundation.exceptions import (
+from foundation.api.exceptions import (
     AccountDisabledException,
     ExistEmailrException,
     InactiveAccountException,
@@ -160,7 +159,6 @@ class RegistrationSerializer(serializers.Serializer):
         return validated_data
 
     def create(self, validated_data):
-
         user = User.objects.create(
             name=validated_data["name"],
             email=validated_data["email"],
@@ -410,7 +408,6 @@ class WhatsAPPSerializer(serializers.Serializer):
     message = serializers.CharField(max_length=255)
 
     def save(self, request, **kwargs):
-
         send_whatsapp_notification(
             self.data["phone_number"],
             self.data["message"],

@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: django-foundation
-Version: 0.1
+Version: 0.2
 Summary: A Django app to conduct web-based foundation.
-Home-page: https://www.example.com/
+Home-page: https://github.com/yasminfarza/django_foundation
 Author: Farzana Yasmin
 Author-email: farzana09bd@gmail.com
 License: BSD-3-Clause  # Example license

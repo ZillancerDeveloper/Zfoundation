@@ -3,7 +3,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from api.foundation.views import (
+from foundation.api.views import (
     AppleLogin,
     CurrencyMasterViewSet,
     EmailSendView,

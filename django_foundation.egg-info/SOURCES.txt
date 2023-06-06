@@ -4,12 +4,6 @@ README.rst
 pyproject.toml
 setup.cfg
 setup.py
-api/__init__.py
-api/exceptions.py
-api/pagination.py
-api/serializers.py
-api/urls.py
-api/views.py
 django_foundation.egg-info/PKG-INFO
 django_foundation.egg-info/SOURCES.txt
 django_foundation.egg-info/dependency_links.txt
@@ -23,6 +17,13 @@ foundation/models.py
 foundation/signals.py
 foundation/tests.py
 foundation/views.py
+foundation/api/__init__.py
+foundation/api/exceptions.py
+foundation/api/pagination.py
+foundation/api/serializers.py
+foundation/api/urls.py
+foundation/api/views.py
+foundation/migrations/0001_initial.py
 foundation/migrations/__init__.py
 foundation/templates/foundation/emails/otp_message.html
 foundation/templates/foundation/emails/password_reset_key.html
@@ -32,3 +33,10 @@ foundation/utils/converter.py
 foundation/utils/emails.py
 foundation/utils/files.py
 foundation/utils/notifications.py
+z_foundation/__init__.py
+z_foundation/asgi.py
+z_foundation/celery.py
+z_foundation/config.py
+z_foundation/settings.py
+z_foundation/urls.py
+z_foundation/wsgi.py
