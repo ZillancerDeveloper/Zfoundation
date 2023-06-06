@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -164,5 +165,4 @@ test.py
 requirements.txt
 manage.py
 z_foundation
-templates
 *.sqlite3
