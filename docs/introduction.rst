@@ -17,3 +17,5 @@ Features
 * Currency master
 * Send mail api
 * Send whats app api
+* Dynamic Menu system
+* Menu permission for users / user type
