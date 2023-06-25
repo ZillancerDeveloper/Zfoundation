@@ -13,3 +13,5 @@ dj-rest-auth==2.2.5
 django-cors-headers
 drf_spectacular
 django-cleanup
+drf-writable-nested
+django-mptt

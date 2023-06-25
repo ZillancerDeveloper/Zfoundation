@@ -3,6 +3,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
+from mptt.admin import MPTTModelAdmin
+
 from foundation.models import (
     CurrencyMaster,
     CurrencyRate,
@@ -10,9 +12,25 @@ from foundation.models import (
     UserAuthenticationOption,
     UserInfo,
     UserType,
+    Menu,
+    MenuAction,
+    UserMenuSecurity,
+    UsersMenuPermission,
+    UserTypeMenuPermission,
 )
 
-admin.site.register(UserType)
+admin.site.register(Menu, MPTTModelAdmin)
+admin.site.register(MenuAction)
+
+
+class UserTypeMenuPermissionInlineAdmin(admin.TabularInline):
+    model = UserTypeMenuPermission
+    extra = 1
+
+
+@admin.register(UserType)
+class UserType(admin.ModelAdmin):
+    inlines = [UserTypeMenuPermissionInlineAdmin]
 
 
 class UserInfoInlineAdmin(admin.StackedInline):
@@ -47,10 +65,26 @@ class UserAuthenticationOptionInlineAdmin(admin.StackedInline):
     )
 
 
+class UsersMenuPermissionInlineAdmin(admin.TabularInline):
+    model = UsersMenuPermission
+    extra = 1
+
+
+@admin.register(UserMenuSecurity)
+class UserMenuSecurityAdmin(admin.ModelAdmin):
+    model = UserMenuSecurity
+    inlines = [
+        UsersMenuPermissionInlineAdmin,
+    ]
+
+
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     model = User
-    inlines = [UserInfoInlineAdmin, UserAuthenticationOptionInlineAdmin]
+    inlines = [
+        UserInfoInlineAdmin,
+        UserAuthenticationOptionInlineAdmin,
+    ]
 
     search_fields = [
         "email",

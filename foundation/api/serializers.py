@@ -16,6 +16,9 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
+from drf_writable_nested.serializers import WritableNestedModelSerializer
+
 from foundation.api.exceptions import (
     AccountDisabledException,
     ExistEmailrException,
@@ -30,6 +33,11 @@ from foundation.models import (
     UserAuthenticationOption,
     UserInfo,
     UserType,
+    Menu,
+    MenuAction,
+    UserMenuSecurity,
+    UserTypeMenuPermission,
+    UsersMenuPermission,
 )
 from foundation.utils.emails import send_email
 from foundation.utils.notifications import (
@@ -425,10 +433,139 @@ class UserTypeSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        exclude = ("password",)
 
 
 class CurrencyMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CurrencyMaster
         fields = "__all__"
+
+
+class MenuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Menu
+        fields = (
+            "id",
+            "name",
+            "slug",
+            "icon",
+            "url",
+            "order",
+            "parent",
+            "level",
+            "visible_for_authenticated",
+            "visible_for_anonymous",
+        )
+
+
+class MenuActionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuAction
+        fields = ("id", "action", "icon", "class_name")
+
+
+class UserTypePermissionSerializer(serializers.ModelSerializer):
+    menu = MenuSerializer()
+    menu_action = MenuActionSerializer(many=True)
+
+    class Meta:
+        model = UserTypeMenuPermission
+        fields = [
+            "menu",
+            "menu_action",
+        ]
+        depth = 1
+
+
+class TypeMenuSecuritySerializer(serializers.ModelSerializer):
+    menu = serializers.PrimaryKeyRelatedField(queryset=Menu.objects.all())
+
+    class Meta:
+        model = UserTypeMenuPermission
+        fields = [
+            "menu",
+            "menu_action",
+        ]
+
+
+class TypeNestedMenuSecuritySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserTypeMenuPermission
+        exclude = ("user_type",)
+        depth = 2
+
+
+class UserTypeSecuritySerializer(WritableNestedModelSerializer):
+    usertype_menu_set = TypeMenuSecuritySerializer(many=True)
+
+    class Meta:
+        model = UserType
+        fields = (
+            "id",
+            "name",
+            "visible_in_signup",
+            "usertype_menu_set",
+        )
+
+
+class UserTypeNestedSecuritySerializer(serializers.ModelSerializer):
+    usertype_menu_set = TypeNestedMenuSecuritySerializer(many=True)  # For depth
+
+    class Meta:
+        model = UserType
+        fields = (
+            "id",
+            "name",
+            "visible_in_signup",
+            "usertype_menu_set",
+        )
+
+
+class UsersMenuPermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UsersMenuPermission
+        exclude = ("users_menu",)
+
+
+class UsersNestedMenuPermissionSerializer(UsersMenuPermissionSerializer):
+    class Meta(UsersMenuPermissionSerializer.Meta):
+        depth = 1
+
+
+class UserSecuritySerializer(WritableNestedModelSerializer):
+    users_menu_set = UsersMenuPermissionSerializer(many=True)
+
+    class Meta:
+        model = UserMenuSecurity
+        fields = (
+            "id",
+            "users",
+            "users_menu_set",
+        )
+
+
+class UserNestedSecuritySerializer(serializers.ModelSerializer):
+    users_menu_set = UsersNestedMenuPermissionSerializer(many=True)  # For depth
+
+    class Meta(UserSecuritySerializer.Meta):
+        model = UserMenuSecurity
+        fields = (
+            "id",
+            "users",
+            "users_menu_set",
+        )
+        depth = 1
+
+
+class UserPermissionSerializer(serializers.ModelSerializer):
+    menu = MenuSerializer()
+    menu_action = MenuActionSerializer(many=True)
+
+    class Meta:
+        model = UsersMenuPermission
+        fields = [
+            "menu",
+            "menu_action",
+        ]
+        depth = 1

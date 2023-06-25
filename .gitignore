@@ -139,3 +139,4 @@ requirements.txt
 manage.py
 z_foundation
 *.sqlite3
+media

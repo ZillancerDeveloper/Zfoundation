@@ -16,6 +16,11 @@ from foundation.api.views import (
     RegistrationAPIView,
     UserTypeViewSet,
     UserViewSet,
+    UserPermissionView,
+    UserTypeSecurityViewSet,
+    UserSecurityViewSet,
+    MenuViewSet,
+    MenuActionViewSet,
     WhatsAPPView,
     google_token,
 )
@@ -25,7 +30,13 @@ app_name = "api.foundation"
 router = DefaultRouter()
 router.register(r"user_type", UserTypeViewSet, basename="user_type")
 router.register(r"users", UserViewSet, basename="users")
-router.register(r"currency-master", CurrencyMasterViewSet, basename="currency-master")
+router.register(r"currency_master", CurrencyMasterViewSet, basename="currency_master")
+router.register(r"menus", MenuViewSet, basename="menus")
+router.register(r"menu_actions", MenuActionViewSet, basename="menu_actions")
+router.register(
+    r"user_type_security", UserTypeSecurityViewSet, basename="user_type_security"
+)
+router.register(r"user_security", UserSecurityViewSet, basename="user_security")
 
 
 urlpatterns = [
@@ -66,6 +77,8 @@ urlpatterns = [
     # Notification send apis
     path("send_email/", EmailSendView.as_view(), name="email_send"),
     path("whats_app/", WhatsAPPView.as_view(), name="whats_app_message"),
+    # User permission menus
+    path("permission/", UserPermissionView.as_view(), name="user_permission"),
 ]
 
 urlpatterns += router.urls

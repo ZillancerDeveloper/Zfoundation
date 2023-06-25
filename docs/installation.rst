@@ -33,6 +33,7 @@ Installation
         "django_celery_results",
         "django_cleanup.apps.CleanupConfig",
         "drf_spectacular",
+        "mptt",
         "foundation",
     )
 
