@@ -2,13 +2,16 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Iterable, Optional
 
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from mptt.models import MPTTModel, TreeForeignKey
 from phonenumber_field.modelfields import PhoneNumberField
+from django.template.defaultfilters import slugify
+
+from django.db.models.functions import Lower
 
 from foundation.managers import CustomUserManager
 
@@ -57,7 +60,8 @@ class CurrencyMaster(models.Model):
 
 
 class UserType(models.Model):
-    name = models.CharField(max_length=50, verbose_name=_("Name"))
+    name = models.CharField(max_length=50, verbose_name=_("Name"), unique=True)
+    visible_in_signup = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.name
@@ -65,7 +69,8 @@ class UserType(models.Model):
     class Meta:
         verbose_name = _("User Type")
         verbose_name_plural = _("User Type")
-        ordering = ("id",)
+        ordering = ("-id",)
+        constraints = [models.UniqueConstraint(Lower("name"), name="unique_name")]
 
 
 class User(AbstractUser):
@@ -175,3 +180,124 @@ class CurrencyRate(models.Model):
         get_latest_by = ("effective_date",)
         verbose_name = _("Currency Rate")
         verbose_name_plural = _("Currency Rate")
+
+
+class Menu(MPTTModel, BaseModel):
+    name = models.CharField(max_length=50, verbose_name=_("Name"), unique=True)
+    slug = models.SlugField(max_length=100, verbose_name=_("Slug"), editable=False)
+    parent = TreeForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="children",
+        verbose_name=_("Parent"),
+    )
+    icon = models.ImageField(
+        verbose_name=_("Icon"), upload_to="menu/icon/", blank=True, null=True
+    )
+    url = models.URLField(verbose_name=_("URL"), blank=True, null=True)
+    order = models.IntegerField(verbose_name=_("Order"), default=0)
+    visible_for_authenticated = models.BooleanField(
+        verbose_name=_("Visible for authenticated"), default=True
+    )
+    visible_for_anonymous = models.BooleanField(
+        verbose_name=_("Visible for anonymous"), default=False
+    )
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        ordering = ("order",)
+        verbose_name = _("Menu")
+        verbose_name_plural = _("Menu")
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        return super().save(*args, **kwargs)
+
+
+class MenuAction(BaseModel):
+    action = models.CharField(max_length=10, verbose_name=_("Action"), unique=True)
+    icon = models.ImageField(
+        verbose_name=_("Icon"), upload_to="menu_items/icon/", blank=True, null=True
+    )
+    class_name = models.CharField(
+        max_length=10,
+        verbose_name=_("Class name"),
+        blank=True,
+        null=True,
+        help_text=_("Use for HTML class name."),
+    )
+
+    def __str__(self) -> str:
+        return self.action
+
+    class Meta:
+        ordering = ("id",)
+        verbose_name = _("Menu Action")
+        verbose_name_plural = _("Menu Action")
+
+
+class UserTypeMenuPermission(BaseModel):
+    user_type = models.ForeignKey(
+        UserType,
+        on_delete=models.CASCADE,
+        verbose_name=_("Select user type"),
+        related_name="usertype_menu_set",
+    )
+    menu = models.ForeignKey(
+        Menu, on_delete=models.CASCADE, verbose_name=_("Select menu")
+    )
+    menu_action = models.ManyToManyField(
+        MenuAction,
+        related_name="user_type_menu_action_set",
+        verbose_name=_("Select menu actions"),
+    )
+
+    def __str__(self) -> str:
+        return f"{self.user_type} - {self.menu}"
+
+    class Meta:
+        ordering = ("-id",)
+        unique_together = ("user_type", "menu")
+        verbose_name = _("User Type Menu Permission")
+        verbose_name_plural = _("User Type Menu Permission")
+
+
+class UserMenuSecurity(BaseModel):
+    users = models.ManyToManyField(User, verbose_name=_("Select users"))
+
+    # def __str__(self) -> str:
+    #     return f"{self.user} - {self.menu}"
+
+    class Meta:
+        ordering = ("-id",)
+        verbose_name = _("User Menu Security")
+        verbose_name_plural = _("User Menu Security")
+
+
+class UsersMenuPermission(BaseModel):
+    users_menu = models.ForeignKey(
+        UserMenuSecurity,
+        models.PROTECT,
+        verbose_name=_("Select users"),
+        related_name="users_menu_set",
+    )
+    menu = models.ForeignKey(
+        Menu, on_delete=models.CASCADE, verbose_name=_("Select menu")
+    )
+    menu_action = models.ManyToManyField(
+        MenuAction,
+        related_name="user_menu_action_set",
+        verbose_name=_("Select menu actions"),
+    )
+
+    # def __str__(self) -> str:
+    #     return f"{self.user} - {self.menu}"
+
+    class Meta:
+        ordering = ("-id",)
+        verbose_name = _("Users Menu Permission")
+        verbose_name_plural = _("Users Menu Permission")

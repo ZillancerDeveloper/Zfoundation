@@ -1,6 +1,5 @@
 from typing import Type
 
-from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.apple.views import (
     AppleOAuth2Adapter,
     AppleOAuth2Client,
@@ -36,11 +35,30 @@ from foundation.api.serializers import (
     RegistrationSerializer,
     UserTypeSerializer,
     WhatsAPPSerializer,
+    UserSecuritySerializer,
+    UserTypePermissionSerializer,
+    UserTypeSecuritySerializer,
+    UserTypeNestedSecuritySerializer,
+    UserNestedSecuritySerializer,
+    MenuSerializer,
+    MenuActionSerializer,
+    UserPermissionSerializer,
     get_tokens_for_user,
     get_user_information,
 )
-from foundation.models import CurrencyMaster, User, UserAuthenticationOption, UserType
+from foundation.models import (
+    CurrencyMaster,
+    User,
+    UserAuthenticationOption,
+    UserType,
+    Menu,
+    MenuAction,
+    UserMenuSecurity,
+    UserTypeMenuPermission,
+    UsersMenuPermission,
+)
 from .app_settings import UserSerializer
+from .utils import mergedicts
 
 
 class RegistrationAPIView(generics.GenericAPIView):
@@ -347,13 +365,18 @@ class WhatsAPPView(generics.GenericAPIView):
 
 class UserTypeViewSet(MasterGenericViewSet):
     """
-    A viewset for viewingUserType instances.
+    A viewset for viewing UserType instances.
+    This api user for rendering signup page user type
     """
 
     model = UserType
     serializer_class = UserTypeSerializer
     permission_classes = (AllowAny,)
     http_method_names = ("get",)
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(visible_in_signup=True)
 
 
 class UserViewSet(MasterGenericViewSet):
@@ -363,7 +386,6 @@ class UserViewSet(MasterGenericViewSet):
 
     model = User
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
     http_method_names = ("get",)
 
 
@@ -375,3 +397,101 @@ class CurrencyMasterViewSet(MasterGenericViewSet):
     model = CurrencyMaster
     serializer_class = CurrencyMasterSerializer
     http_method_names = ("get",)
+
+
+class MenuViewSet(MasterGenericViewSet):
+    """
+    A viewset for viewing menus instances.
+    """
+
+    model = Menu
+    serializer_class = MenuSerializer
+    http_method_names = ("get",)
+
+
+class MenuActionViewSet(MasterGenericViewSet):
+    """
+    A viewset for viewing menu actions instances.
+    """
+
+    model = MenuAction
+    serializer_class = MenuActionSerializer
+    http_method_names = ("get",)
+
+
+class UserTypeSecurityViewSet(MasterGenericViewSet):
+    """
+    A viewset for viewing UserType and menu permissions instances.
+    """
+
+    model = UserType
+    serializer_class = UserTypeSecuritySerializer
+
+    def get_serializer_class(self):
+        if self.action in ["list", "retrieve"]:
+            return UserTypeNestedSecuritySerializer
+        return super().get_serializer_class()
+
+
+class UserSecurityViewSet(MasterGenericViewSet):
+    """
+    A viewset for viewing User and menu permissions instances.
+    """
+
+    model = UserMenuSecurity
+    serializer_class = UserSecuritySerializer
+
+    def get_serializer_class(self):
+        if self.action in ["list", "retrieve"]:
+            return UserNestedSecuritySerializer
+        return super().get_serializer_class()
+
+
+class UserPermissionView(views.APIView):
+    """
+    A view for viewing Users permissions.
+    """
+
+    model = UsersMenuPermission
+    permission_classes = (IsAuthenticated,)
+
+    def _get_user_menu_permissions(self):
+        # print(self.request.user.get_user_security)
+        queryset = UsersMenuPermission.objects.filter(
+            users_menu__users=self.request.user
+        )
+        serializer = UserPermissionSerializer(queryset, many=True)
+        return serializer.data
+
+    def _get_usertype_menu_permissions(self):
+        queryset = UserTypeMenuPermission.objects.filter(
+            user_type__user=self.request.user
+        )
+        serializer = UserTypePermissionSerializer(queryset, many=True)
+        return serializer.data
+
+    def get(self, request, format=None):
+        """
+        Return a list of all users permissions.
+        """
+        menu_permissions = (
+            self._get_user_menu_permissions() + self._get_usertype_menu_permissions()
+        )
+
+        temp_ids, user_permission = [], []
+
+        for row in menu_permissions:
+            id = row["menu"]["id"]
+            if id not in temp_ids:
+                temp_ids.append(id)
+                user_permission.append(row)
+            else:
+                for index, perm in enumerate(user_permission):
+                    if id == perm["menu"]["id"]:
+                        merge_dict = mergedicts(row, perm)
+                        user_permission.remove(user_permission[index])
+                        user_permission.append(merge_dict)
+
+        ordered_permission = sorted(user_permission, key=lambda d: d["menu"]["order"])
+
+        return Response(ordered_permission)

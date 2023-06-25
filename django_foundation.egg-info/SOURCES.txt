@@ -9,6 +9,13 @@ django_foundation.egg-info/SOURCES.txt
 django_foundation.egg-info/dependency_links.txt
 django_foundation.egg-info/requires.txt
 django_foundation.egg-info/top_level.txt
+docs/Makefile
+docs/conf.py
+docs/configuration.rst
+docs/index.rst
+docs/installation.rst
+docs/introduction.rst
+docs/make.bat
 foundation/__init__.py
 foundation/admin.py
 foundation/apps.py
@@ -26,6 +33,8 @@ foundation/api/urls.py
 foundation/api/utils.py
 foundation/api/views.py
 foundation/migrations/0001_initial.py
+foundation/migrations/0002_menu_menuaction_usermenusecurity_usersmenupermission_and_more.py
+foundation/migrations/0003_insert_menu_actions.py
 foundation/migrations/__init__.py
 foundation/templates/foundation/emails/otp_message.html
 foundation/templates/foundation/emails/password_reset_key.html
