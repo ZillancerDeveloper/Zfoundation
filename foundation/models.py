@@ -6,25 +6,47 @@ from decimal import Decimal
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.functions import Lower
+from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 from phonenumber_field.modelfields import PhoneNumberField
-from django.template.defaultfilters import slugify
-
-from django.db.models.functions import Lower
 
 from foundation.managers import CustomUserManager
+from foundation.utils.base import get_current_user
 
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(
+        "User",
+        on_delete=models.SET_NULL,
+        null=True,
+        editable=False,
+        related_name="%(class)s_created",
+    )
+    updated_by = models.ForeignKey(
+        "User",
+        on_delete=models.SET_NULL,
+        null=True,
+        editable=False,
+        related_name="%(class)s_updated",
+    )
+
+    def save(self, *args, **kwargs):
+        user = get_current_user()
+        if user and user.is_authenticated:
+            self.modified_by = user
+            if not self.id:
+                self.created_by = user
+        super(BaseModel, self).save(*args, **kwargs)
 
     class Meta:
         abstract = True
 
 
-class CurrencyMaster(models.Model):
+class CurrencyMaster(BaseModel):
     currency_name = models.CharField(max_length=50, verbose_name=_("Currency Name"))
     currency_code = models.CharField(max_length=20, verbose_name=_("Currency Code"))
     currency_symbol = models.CharField(
@@ -59,7 +81,7 @@ class CurrencyMaster(models.Model):
             return ""
 
 
-class UserType(models.Model):
+class UserType(BaseModel):
     name = models.CharField(max_length=50, verbose_name=_("Name"), unique=True)
     visible_in_signup = models.BooleanField(default=False)
 
@@ -143,7 +165,7 @@ class UserAuthenticationOption(models.Model):
         return super().clean()
 
 
-class CurrencyRate(models.Model):
+class CurrencyRate(BaseModel):
     currency_from = models.ForeignKey(
         CurrencyMaster,
         on_delete=models.CASCADE,

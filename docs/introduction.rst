@@ -19,3 +19,10 @@ Features
 * Send whats app api
 * Dynamic Menu system
 * Menu permission for users / user type
+
+
+Some internal used
+-------------------
+
+* BaseModel can be inherite for created_at, updated_at, created_by, updated_by fields
+* BaseAdmin can be inherite as readonly_fiels for created_at, updated_at, created_by, updated_by fields

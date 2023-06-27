@@ -59,7 +59,7 @@ Installation
 5. Add cors origins:
 
 .. code-block:: python
-    
+
     CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
     CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")
 
@@ -79,7 +79,7 @@ Installation
     }
 
 
-6. Add simple jwt:
+7. Add simple jwt:
 
 .. code-block:: python
 
@@ -92,7 +92,7 @@ Installation
     }
 
 
-6. Add spectacular settings:
+8. Add spectacular settings:
 
 .. code-block:: python
 
@@ -105,7 +105,7 @@ Installation
     }
 
 
-7. Add rest auth:
+9. Add rest auth:
 
 .. code-block:: python
 
@@ -117,7 +117,7 @@ Installation
     }
 
 
-8. Add custom rest auth serializers:
+10. Add custom rest auth serializers:
 
 .. code-block:: python
 
@@ -126,7 +126,7 @@ Installation
     }
 
 
-9. Add others settings:
+11. Add others settings:
 
 .. code-block:: python
 
@@ -144,7 +144,7 @@ Installation
     CALLBACK_URL = env("CALLBACK_URL")
 
 
-10. Add socialaccount prividers:
+12. Add socialaccount prividers:
 
 .. code-block:: python
 
@@ -172,9 +172,9 @@ Installation
             }
         },
     }
-    
 
-11. Add celery settings:
+
+13. Add celery settings:
 
 .. code-block:: python
 
@@ -186,9 +186,9 @@ Installation
     CELERY_TASK_SERIALIZER = "json"
     CELERY_TIMEZONE = "Asia/Dubai"
     CELERY_RESULT_BACKEND = "django-db"
-    
 
-12. Add smtp settings:
+
+14. Add smtp settings:
 
 .. code-block:: python
 
@@ -196,23 +196,33 @@ Installation
     EMAIL_USE_TLS = True
     EMAIL_HOST = "smtp.gmail.com"
     EMAIL_PORT = 587
-    
 
-13. Add twilio settings:
+
+15. Add twilio settings:
 
 .. code-block:: python
 
     TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID")
     TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN")
     TWILIO_FROM_WHATSAPP_NUMBER = env("TWILIO_FROM_WHATSAPP_NUMBER")
-    
 
-14. Make the user type field required/optional in sign up form:
+
+16. Make the user type field required/optional in sign up form:
 
 .. code-block:: python
 
     SIGN_UP_USER_TYPE_REQUIRED = False
     SIGN_UP_USER_TYPE_ALLOW_NULL = False
+
+
+17. Add CurrentUserMiddleware middleware for getting current logged user. This will be useful for created_by, updated_by fields:
+
+.. code-block:: python
+
+    MIDDLEWARE = [
+        ...,
+        "foundation.middleware.CurrentUserMiddleware",
+    ]
 
 
 Custom user serialzier (optional)
@@ -225,4 +235,3 @@ Custom user serialzier (optional)
     USER_INFO_SERIALIZERS = {
         "USER_SERIALIZER": "api.master.serializers.CustomUserSerializer"   # Replace with your own serializer
     }
-    
