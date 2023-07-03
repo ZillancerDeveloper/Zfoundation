@@ -3,8 +3,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
-from mptt.admin import MPTTModelAdmin
-
 from foundation.models import (
     CurrencyMaster,
     CurrencyRate,
@@ -19,8 +17,7 @@ from foundation.models import (
     UserTypeMenuPermission,
 )
 
-admin.site.register(Menu, MPTTModelAdmin)
-admin.site.register(MenuAction)
+admin.site.register([Menu, MenuAction])
 
 
 class UserTypeMenuPermissionInlineAdmin(admin.TabularInline):
