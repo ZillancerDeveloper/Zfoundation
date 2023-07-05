@@ -140,4 +140,3 @@ manage.py
 z_foundation
 *.sqlite3
 media
-.pre-commit-config.yaml
