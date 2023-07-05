@@ -1,7 +1,6 @@
 from constance import config
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from mptt.admin import MPTTModelAdmin
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
 from foundation.models import (
