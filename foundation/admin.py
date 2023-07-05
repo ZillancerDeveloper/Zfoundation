@@ -20,13 +20,17 @@ from foundation.models import (
 admin.site.register([Menu, MenuAction])
 
 
+class BaseAdmin(admin.ModelAdmin):
+    readonly_fields = ("created_at", "updated_at", "created_by", "updated_by")
+
+
 class UserTypeMenuPermissionInlineAdmin(admin.TabularInline):
     model = UserTypeMenuPermission
     extra = 1
 
 
 @admin.register(UserType)
-class UserType(admin.ModelAdmin):
+class UserType(BaseAdmin):
     inlines = [UserTypeMenuPermissionInlineAdmin]
 
 
@@ -68,7 +72,7 @@ class UsersMenuPermissionInlineAdmin(admin.TabularInline):
 
 
 @admin.register(UserMenuSecurity)
-class UserMenuSecurityAdmin(admin.ModelAdmin):
+class UserMenuSecurityAdmin(BaseAdmin):
     model = UserMenuSecurity
     inlines = [
         UsersMenuPermissionInlineAdmin,
@@ -131,12 +135,12 @@ class CustomUserAdmin(UserAdmin):
 
 
 @admin.register(CurrencyMaster)
-class CurrencyMasterAdmin(admin.ModelAdmin):
+class CurrencyMasterAdmin(BaseAdmin):
     list_display = ["currency_name", "currency_code", "currency_symbol", "default"]
 
 
 @admin.register(CurrencyRate)
-class CurrencyRateAdmin(admin.ModelAdmin):
+class CurrencyRateAdmin(BaseAdmin):
     list_display = [
         "currency_from",
         "currency_to",
