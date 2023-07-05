@@ -19,5 +19,6 @@ setup(
         "django-cleanup",
         "drf-writable-nested",
         "django-mptt",
+        "Pillow",
     ]
 )

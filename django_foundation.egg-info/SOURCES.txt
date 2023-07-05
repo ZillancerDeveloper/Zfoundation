@@ -20,6 +20,7 @@ foundation/__init__.py
 foundation/admin.py
 foundation/apps.py
 foundation/managers.py
+foundation/middleware.py
 foundation/models.py
 foundation/signals.py
 foundation/tests.py
@@ -35,11 +36,13 @@ foundation/api/views.py
 foundation/migrations/0001_initial.py
 foundation/migrations/0002_menu_menuaction_usermenusecurity_usersmenupermission_and_more.py
 foundation/migrations/0003_insert_menu_actions.py
+foundation/migrations/0004_currencymaster_created_at_currencymaster_created_by_and_more.py
 foundation/migrations/__init__.py
 foundation/templates/foundation/emails/otp_message.html
 foundation/templates/foundation/emails/password_reset_key.html
 foundation/templates/foundation/emails/welcome.html
 foundation/utils/__init__.py
+foundation/utils/base.py
 foundation/utils/converter.py
 foundation/utils/emails.py
 foundation/utils/files.py
