@@ -20,14 +20,14 @@ class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
-        "User",
+        "foundation.User",
         on_delete=models.SET_NULL,
         null=True,
         editable=False,
         related_name="%(class)s_created",
     )
     updated_by = models.ForeignKey(
-        "User",
+        "foundation.User",
         on_delete=models.SET_NULL,
         null=True,
         editable=False,
@@ -37,7 +37,7 @@ class BaseModel(models.Model):
     def save(self, *args, **kwargs):
         user = get_current_user()
         if user and user.is_authenticated:
-            self.modified_by = user
+            self.updated_by = user
             if not self.id:
                 self.created_by = user
         super(BaseModel, self).save(*args, **kwargs)
