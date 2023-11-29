@@ -194,7 +194,7 @@ class RegistrationSerializer(serializers.Serializer):
             )
 
         # Send welcome mail
-        welcome_email_notification(user)
+        #welcome_email_notification(user)
 
         return user
 
