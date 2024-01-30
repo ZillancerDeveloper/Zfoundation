@@ -1,21 +1,20 @@
 <body>
-  <p>Hi {{ user.name }},</p>
+  <p>{{ _("Hi") }} {{ user.name }},</p>
 
   <p>
-    We received your request for a single-use otp to use with your {{site_name}}
-    account.
+    {{ _("We received your request for a single-use otp to use with your") }} {{site_name}}
+    {{ _("account") }}.
   </p>
 
   <p>
-    Your single-use OTP is:
+   {{ _("Your single-use OTP is:") }}
     <strong style="font-size: large">{{ otp_code }}</strong>
   </p>
 
   <p>
-    If you didn't request this code, you can safely ignore this email. Someone
-    else might have typed your e-mail address by mistake.
+   {{ _(" If you didn't request this code, you can safely ignore this email. Someone else might have typed your e-mail address by mistake.") }}
   </p>
 
-  <p style="margin-bottom: 0px">Thank you.</p>
-  <p style="margin-top: 0px">The {{site_name}} Team</p>
+  <p style="margin-bottom: 0px">{{ _("Thank you.") }}</p>
+  <p style="margin-top: 0px">{{ _("The") }} {{site_name}} {{ _("Team") }}</p>
 </body>

@@ -1,8 +1,8 @@
 <body>
-    <p>Hello {{user.name}},</p>
+    <p>{{ _("Hello") }} {{user.name}},</p>
 
-    <p>Welcome to {{site_name}}! You’ve successfully signed up for our services.</p>
+    <p>{{ _("Welcome to ")}}{{site_name}}! {{ _("You’ve successfully signed up for our services") }}.</p>
 
-    <p>Thank you.</p>
-    <p><strong>{{site_name}} Team</strong></p>
+    <p>{{ _("Thank you") }}.</p>
+    <p><strong>{{site_name}} {{ _("Team") }}</strong></p>
 </body>
