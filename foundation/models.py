@@ -96,6 +96,12 @@ class UserType(BaseModel):
 
 
 class User(AbstractUser):
+    LANGUAGES = (
+        ('en', _('English')),
+        ('fr', _('French')),
+        ('de', _('German')),
+        ('it', _('Italian'))
+    )
     username = None
     first_name = None
     last_name = None
@@ -108,7 +114,7 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
-
+    language = models.CharField(null=True,blank=True,choices=LANGUAGES, default="English")
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
