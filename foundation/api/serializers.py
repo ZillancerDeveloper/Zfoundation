@@ -55,7 +55,7 @@ def get_user_information(user: User) -> Dict:
         "name": user.name,
         "email": user.email,
         "user_type": user.user_type.id if user.user_type else None,
-        # "language":user.language if user.language else None,
+        "language":user.language if user.language else None,
     }
 
 
