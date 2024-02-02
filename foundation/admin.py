@@ -93,7 +93,7 @@ class CustomUserAdmin(UserAdmin):
         "email",
     ]
 
-    list_display = ["email", "name", "is_active", "is_staff", "user_type"]
+    list_display = ["email", "name", "is_active", "is_staff", "user_type"] #,language
 
     list_display_links = ["email", "is_active", "is_staff"]
     list_filter = ("is_active", "is_staff", "is_superuser")
